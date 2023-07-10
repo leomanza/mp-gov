@@ -15,11 +15,9 @@ const content =
       blockHeight
     ) ?? "null"
   );
-// const parentItem = "MPIP";
 const highlight = !!props.highlight;
 const raw = !!props.raw;
 
-//TODO - adresss should be changed
 const link = `#/mob.near/widget/MainPage.Comment.Page?accountId=${accountId}&blockHeight=${blockHeight}`;
 
 return (

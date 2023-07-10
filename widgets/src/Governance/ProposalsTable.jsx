@@ -1,8 +1,6 @@
 const proposals = props.proposals;
 const authorId = "manzanal.near";
 const contractId = "v003.mpip.near";
-let metrics = fetch("https://validators.narwallets.com/metrics_json");
-
 State.init({
 });
 const yoctoToNear = (amountYocto) =>
@@ -21,7 +19,7 @@ const formatStatus = (status) => {
 
 const getProposalState = (mpip_id) => {
   const state = Near.view(contractId, "get_proposal_state", {
-    mpip_id, total_voting_power: metrics.body.vote_totalVotingPower.toFixed(0) + "000000000000000000000000"
+    mpip_id
   });
   return formatStatus(state)
 }
@@ -60,8 +58,6 @@ const Link = styled.a`
     }
   }
 `;
-
-if (!metrics) return <>Loading...</>;
 
 return (
   <div class="table-responsive w-100 mt-2">

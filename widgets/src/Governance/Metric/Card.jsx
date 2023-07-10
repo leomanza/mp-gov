@@ -30,6 +30,6 @@ const Label = styled.span`
 return (
   <Container>
     <Value>{props.value}</Value>
-    <Label>{props.label}</Label>
+    <Label data-toggle="tooltip" data-placement="bottom" title={props.tooltip} >{props.label}</Label>
   </Container>
 );

@@ -242,7 +242,8 @@ return (
                     src={`${authorId}/widget/Governance.Metric.Card`}
                     props={{
                         value: <>{numberWithCommas(parseInt(quorumToReach.toFixed(0)))} VP </>,
-                        label: <>Quorum ({quorumToReachPercentage}% of total VP) <i class="bi bi-info-circle" /></>
+                        label: <>Quorum ({quorumToReachPercentage}% of total VP) <i class="bi bi-info-circle" /></>,
+                        tooltip: "A quorum is the minimum number of voting power required for a governing body to approve a proposal. "
                     }}
                 />
                 <Widget
@@ -250,6 +251,7 @@ return (
                     props={{
                         value: <>{numberWithCommas(state.threshold)} VP</>,
                         label: <>Proposal threshold {q} <i class="bi bi-info-circle" /></>,
+                        tooltip: "Proposal thresholds are the criteria someone needs to meet in order to introduce a proposal that will be voted on."
                     }}
                 />
                 <Widget
@@ -257,6 +259,7 @@ return (
                     props={{
                         value: <>{numberWithCommas(state.voters)} / {numberWithCommas(state.totalHolders)}</>,
                         label: <>Voters / VP Holders <i class="bi bi-info-circle" /></>,
+                        tooltip: "Numbers of active voters / Number of accounts with voting power"
                     }}
                 />
             </Metrics>
@@ -326,26 +329,5 @@ return (
                 props={{ proposals: state.proposals, update: props.update }}
             />
         </div>
-        {/* <InfiniteScroll loadMore={loadProposals} hasMore={state.hasMore}>
-                <div class="d-flex flex-wrap">
-                {state.proposals.map((proposal, i) => {
-                    if (proposal.status === "Removed") return null;
-                    console.log('PROPOSAL', proposal)
-                    return (
-                        <div class="col-xs-6 col-md-4 mb-4 ml-4">
-                        <Widget
-                            key={i}
-                            src={`${authorId}/widget/Governance.Proposal.Card`}
-                            props={{ contractId: state.contractId, proposal: proposal }}
-                        />
-                        </div>
-                    );
-                })}
-                </div>
-            </InfiniteScroll> */}
     </Container>
-
-
-
-
 );

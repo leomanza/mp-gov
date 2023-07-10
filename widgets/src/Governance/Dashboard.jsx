@@ -12,7 +12,7 @@ const getContent = (content) => {
 
 const contentSelector = (
   <Widget
-    src={`${authorId}/widget/Common.TabSelector`}
+    src={`${authorId}/widget/Governance.TabSelector`}
     props={{
       tab: props.tab ?? "home",
       content: getContent(props.content),
