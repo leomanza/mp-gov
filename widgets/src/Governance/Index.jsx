@@ -30,8 +30,6 @@ const logo = <svg width="133" height="16" viewBox="0 0 133 16" fill="none" xmlns
 const ContentContainer = styled.div`
   width: 100%;
   background: #ffffff;
-  border: 1px solid #eceef0;
-  padding: 1.5em;
 
   &.form {
     border: none;

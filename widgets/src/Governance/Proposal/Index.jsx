@@ -354,7 +354,7 @@ const isProposalCreator = () => {
   return state.proposal.creator_id == accountId;
 }
 
-if (!state.proposalIsFetched || !state.statusIsFetched || !state.proposalVotesAreFetched || !state.proposalIsEditableIsFetched ) return <>Loading...</>;
+if (!state.proposalIsFetched || !state.statusIsFetched || !state.proposalVotesAreFetched || !state.proposalIsEditableIsFetched) return <>Loading...</>;
 
 return (
   <Container>
@@ -401,16 +401,16 @@ return (
 
       <div className="d-flex flex-row gap-1 justify-content-between">
         <h3>{state.proposal.title}</h3>
-        <div className="d-flex flex-row gap-1 align-items-center" >
-          <h5>by </h5>
-          <Widget
-            src="mob.near/widget/Profile.ShortInlineBlock"
-            props={{ accountId: state.proposal.creator_id, tooltip: true }}
-          />
-        </div>
       </div>
       <div>
         <h4>{state.proposal.short_description}</h4>
+      </div>
+      <div className="d-flex flex-row gap-1 align-items-center">
+        <h5>by </h5>
+        <Widget
+          src="mob.near/widget/Profile.ShortInlineBlock"
+          props={{ accountId: state.proposal.creator_id, tooltip: true }}
+        />
       </div>
       <div>
         <h5>Description</h5>
