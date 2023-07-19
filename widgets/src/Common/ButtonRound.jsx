@@ -6,19 +6,18 @@ const disabled = props.disabled
 const tag = href ? "a" : "button";
 
 const Wrapper = styled[tag]`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border-radius: 100px;
+  border-radius: 50% !important;
+  color: white;
+  border: none !important;
+  padding: 12px 12px;
+  border: 1px solid #d7dbdf;
+  -webkit-transition: background-color 1s, color 1s, -webkit-transform 0.5s;
+     transition: background-color 1s, transform 0.5s;
   font-weight: 600;
   font-size: 14px;
   line-height: 15px;
-  text-align: center;
   cursor: pointer;
   white-space: nowrap;
-  padding: 12px 32px;
-  border: 1px solid #d7dbdf;
 
   color: ${(p) => {
     switch (p.variant) {
@@ -43,9 +42,7 @@ const Wrapper = styled[tag]`
 
   &:hover,
   &:focus {
-    text-decoration: none;
-    outline: none;
-    opacity: 0.9;
+    border: 1px solid #262829;
   }
 
   &:disabled {

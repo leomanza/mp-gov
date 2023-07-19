@@ -1,8 +1,11 @@
-const proposals = props.proposals;
+let proposals = props.proposals;
 const authorId = "manzanal.near";
 const contractId = "v003.mpip.near";
 State.init({
 });
+
+// sort proposals by mpip_id descending
+proposals.sort((p1, p2) => p2.mpip_id - p1.mpip_id);
 const yoctoToNear = (amountYocto) =>
   new Big(amountYocto).div(new Big(10).pow(24)).toFixed(0);
 
@@ -68,7 +71,7 @@ const getProposalVotes = (mpip_id) => {
   const proposalVotes = Near.view(contractId, "get_proposal_votes", {
     mpip_id
   });
-  if (!proposalVotes.has_voted.length) return "0VP"
+  if (!proposalVotes.has_voted.length) return "0"
   const voting_power = proposalVotes.has_voted.reduce(
     (accumulator, vote) => accumulator + parseInt(vote.voting_power),
     0
@@ -178,7 +181,7 @@ return (
 
               <Cell end>
                 <Label>{getVotingTimeRemaining(proposal)}</Label>
-                <Value> {getProposalVotes(proposal.mpip_id)}</Value>
+                <Value> {getProposalVotes(proposal.mpip_id)}VP</Value>
               </Cell>
             </td>
           </tr>

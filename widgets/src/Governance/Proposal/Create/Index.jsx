@@ -3,6 +3,7 @@ const authorId = "manzanal.near";
 const onClose = props.onClose;
 const edit = props.edit;
 const mpip_id = props.mpip_id ?? null;
+const update = props.update;
 
 const Wrapper = styled.div`
   margin: 16px auto;
@@ -80,6 +81,7 @@ width: 100%;
 
 return (
   <Wrapper>
+       
     <div className="d-flex justify-content-between align-items-center">
       <FormHeader>Create Proposal</FormHeader>
     </div>
@@ -96,7 +98,7 @@ return (
 
       <Widget
         src={`${authorId}/widget/Governance.Proposal.Create.Text`}
-        props={{edit, mpip_id}}
+        props={{edit, mpip_id, update}}
       />
 
     </div>

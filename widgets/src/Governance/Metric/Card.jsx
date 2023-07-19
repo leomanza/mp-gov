@@ -5,7 +5,7 @@ const Container = styled.div`
   align-items: center;
   gap: 1em;
   padding: 1.25em 0.85em;
-  background-color: #fafafa;
+  background-color: #ECEEF0;
   border-radius: 16px;
 `;
 

@@ -29,7 +29,7 @@ const logo = <svg width="133" height="16" viewBox="0 0 133 16" fill="none" xmlns
 
 const ContentContainer = styled.div`
   width: 100%;
-  background: #ffffff;
+  background: #fafafa;
 
   &.form {
     border: none;
@@ -40,11 +40,26 @@ const ContentContainer = styled.div`
     margin: 0;
   }
 `;
+const Container = styled.div`
+width: 100%;
+background: #fafafa;
+padding: 3em;
+
+&.form {
+  border: none;
+  background: #fafafa;
+}
+
+* {
+  margin: 0;
+}
+`
 
 
 State.init({
   tab: props.tab ?? "home",
   content: props.content ?? "",
+
 
 });
 
@@ -82,22 +97,20 @@ const getContent = {
 }[state.tab];
 
 return (
-  <>
+  <Container>
     <Header>
       <a href={`/${authorId}/widget/Governance.Index?tab=home`}
         onClick={() =>
           update({
-            tab: "home"            
+            tab: "home"
           })
         }>
         {logo}
       </a>
-
-
       <Widget src={`${authorId}/widget/Governance.Balance`} props={{}} />
     </Header >
     <ContentContainer className={isForm ? "form" : ""}>
       {getContent}
     </ContentContainer>
-  </>
+  </Container>
 )

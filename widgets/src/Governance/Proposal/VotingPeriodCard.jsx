@@ -39,7 +39,8 @@ const Container = styled.div`
   padding: 1.25em 0.85em;
   box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
   border-radius: 16px;
-
+  background: #ffffff;
+  
   & h4 {
     font-family: "Inter";
     font-style: normal;

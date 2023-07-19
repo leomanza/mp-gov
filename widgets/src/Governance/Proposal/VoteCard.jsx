@@ -4,7 +4,8 @@ const contractId = "v003.mpip.near";
 const META_VOTE_CONTRACT_ID = "meta-vote.near";
 const GET_VP_METHOD = "get_all_locking_positions";
 const GET_IN_USE_VP_METHOD = "get_used_voting_power";
-const proposal = props.proposal;
+const proposal = {...props.proposal, status: "Executed"};
+
 State.init({
   memo: "",
   memoError: "",
@@ -23,6 +24,8 @@ State.init({
 
 const yoctoToNear = (amountYocto) =>
   new Big(amountYocto).div(new Big(10).pow(24)).toFixed(0);
+
+const isProposalVotingFinished = () => proposal.status !== "Draft" && proposal.status !== Active && proposal.status !== "VotingProcess";
 
 if (!state.proposalVotesAreFetched) {
   Near.asyncView(
@@ -78,7 +81,7 @@ if (!state.proposalVotesAreFetched || !state.votingPowerIsFetched || !state.hasV
 const handleVote = (vote) => {
   // check if user already vote
   if (state.hasVoted) {
-    if (state.userVote.vote_type == vote) {
+    if (state.userVote.vote_type == vote && !isProposalVotingFinished()) {
       Near.call([
         {
           contractName: contractId,
@@ -107,6 +110,21 @@ const handleVote = (vote) => {
   }
 };
 
+const withdrawVotingPower = () => {
+  if (isProposalVotingFinished) {
+    Near.call([
+      {
+        contractName: contractId,
+        methodName: "withdraw_voting_power",
+        args: {
+          mpip_id: props.proposal.mpip_id
+        },
+        gas: 300000000000000,
+      },
+    ])
+  }
+}
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -117,7 +135,7 @@ const Container = styled.div`
   padding: 1.25em 0.85em;
   box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
   border-radius: 16px;
-
+  background: #ffffff;
   & h4 {
     font-family: "Inter";
     font-style: normal;
@@ -193,7 +211,7 @@ const voted = (type) => {
 const voteButtonText = state.hasVoted ? "Remove Vote" : "Vote";
 const totalVotes = state.proposalVotes.for_votes + state.proposalVotes.againstVotes + state.proposalVotes.abstainVotes;
 
-if (proposal.status != "VotingProcess") {
+if (proposal.status != "VotingProcess" && !state.hasVoted) {
   return (
     <Container>
       <Heading><div><h2>Vote</h2></div></Heading>
@@ -207,6 +225,25 @@ if (!state.hasVoted && (parseInt(state.votingPower) - parseInt(state.votingPower
     <Container>
       <Heading><div><h2>Vote</h2></div></Heading>
       <h5>Not Enough Voting Power to Vote.</h5>
+    </Container>
+  )
+}
+
+if (state.hasVoted && isProposalVotingFinished()) {
+  return (
+    <Container>
+      <Heading><div><h2>Vote</h2></div></Heading>
+      <VotesContainer>
+        <Widget
+          src={`${authorId}/widget/Common.Button`}
+          props={{
+            children: <><i class="bi bi-box-arrow-down" />Withdraw Voting Power</>,
+            onClick: () => withdrawVotingPower(),
+            className: "mt-2",
+            variant: "primary",
+          }}
+        />
+      </VotesContainer>
     </Container>
   )
 }

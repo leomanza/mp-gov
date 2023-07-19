@@ -144,6 +144,15 @@ const statusColor =
         : "#6c757d";
 
 const Container = styled.div`
+  margin: 16px auto; 
+  width:100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;
+  justify-content: start;
+`;
+
+const ContentContainer = styled.div`
   width:100%;
   display: flex;
   flex-direction: row;
@@ -358,128 +367,140 @@ if (!state.proposalIsFetched || !state.statusIsFetched || !state.proposalVotesAr
 
 return (
   <Container>
-    <WrapperLeft>
-      {state.proposalIsEditable && isProposalCreator() && (<div className="ms-auto">
-        <Widget
-          src={`${authorId}/widget/Common.Button`}
-          props={{
-            children: <><i class="bi bi-pencil-square" />Edit</>,
-            onClick: () => State.update({ mpip_id }),
-            className: "mt-2",
-            variant: "primary",
-            href: `/${authorId}/widget/Governance.Proposal.Create.Index?edit=true&mpip_id=${mpip_id}`
-          }}
-        />
-        <Widget
-          src={`${authorId}/widget/Common.Button`}
-          props={{
-            children: <><i class="bi bi-trash" />Cancel</>,
-            onClick: () => () => onCancelButtonClick(),
-            className: "mt-2",
-            variant: "primary",
-          }}
-        />
-        <Widget
-          src={`${authorId}/widget/Common.Button`}
-          props={{
-            children: <><i class="bi bi-envelope-open" />Start Voting</>,
-            onClick: () => onStartVotingButtonClick(),
-            className: "mt-2",
-            variant: "primary",
-          }}
-        />
-      </div>)}
-
-      <div className="d-flex justify-content-between align-items-center">
-        <div>
-          <h5>Proposal ID: {state.proposal.mpip_id}</h5>
-        </div>
-        <div className="d-flex justify-content-between align-items-center">
-          <span className="status">{formatStatus(state.status)}</span>
-        </div>
-      </div>
-
-      <div className="d-flex flex-row gap-1 justify-content-between">
-        <h3>{state.proposal.title}</h3>
-      </div>
-      <div>
-        <h4>{state.proposal.short_description}</h4>
-      </div>
-      <div className="d-flex flex-row gap-1 align-items-center">
-        <h5>by </h5>
-        <Widget
-          src="mob.near/widget/Profile.ShortInlineBlock"
-          props={{ accountId: state.proposal.creator_id, tooltip: true }}
-        />
-      </div>
-      <div>
-        <h5>Description</h5>
-        <p>{state.proposal.body}</p>
-
-      </div>
-      <div
-        className="d-flex flex-wrap align-items-start"
-        style={{
-          rowGap: "16px",
-          columnGap: "48px",
-        }}
-      >
-      </div>
+    <div>
       <Widget
-        src={`${authorId}/widget/Governance.Proposal.DiscussionCard`}
+        src={`${authorId}/widget/Common.Button`}
         props={{
-          commentsOpen: state.isProposalActiveOrDraft,
-          blockHeight: blockHeight,
-          onCommentButtonClick: () => State.update({ showReply: !state.showReply }),
-          onComment: () => State.update({ showReply: false }),
-          showReply: state.showReply,
-          commentItemIndex: commentItemIndex,
-          highlightComment: props.highlightComment,
-          commentsLimit: props.commentsLimit,
+          children: <><i class="bi bi-arrow-left" />Back</>,
+          onClick: () => State.update({ tabs: "home", content: "" }),
+          className: "mt-2",
+          variant: "primary",
+          href: `/${authorId}/widget/Governance.Index?tab=home`,
 
         }}
       />
-    </WrapperLeft>
-    <WrapperRight>
-      {accountId && (<div className="w-100">
-        <Widget
-          src={`${authorId}/widget/Governance.Proposal.VoteCard`}
-          props={{
-            proposal: { ...state.proposal, status: state.status }
-          }}
-        />
-      </div>)}
+    </div>
+    <ContentContainer>
+      <WrapperLeft>
+        {state.proposalIsEditable && isProposalCreator() && (<div className="ms-auto">
+          <Widget
+            src={`${authorId}/widget/Common.Button`}
+            props={{
+              children: <><i class="bi bi-pencil-square" />Edit</>,
+              onClick: () => State.update({ mpip_id }),
+              className: "mt-2",
+              variant: "primary",
+              href: `/${authorId}/widget/Governance.Proposal.Create.Index?edit=true&mpip_id=${mpip_id}`
+            }}
+          />
+          <Widget
+            src={`${authorId}/widget/Common.Button`}
+            props={{
+              children: <><i class="bi bi-trash" />Cancel</>,
+              onClick: () => () => onCancelButtonClick(),
+              className: "mt-2",
+              variant: "primary",
+            }}
+          />
+          <Widget
+            src={`${authorId}/widget/Common.Button`}
+            props={{
+              children: <><i class="bi bi-envelope-open" />Start Voting</>,
+              onClick: () => onStartVotingButtonClick(),
+              className: "mt-2",
+              variant: "primary",
+            }}
+          />
+        </div>)}
 
-      <div className="w-100">
+        <div className="d-flex justify-content-end align-items-center">
+          <div className="d-flex justify-content-between align-items-center">
+            <span className="status">{formatStatus(state.status)}</span>
+          </div>
+        </div>
+
+        <div className="d-flex flex-row gap-1 justify-content-between">
+          <h3>Prop {state.proposal.mpip_id} - {state.proposal.title}</h3>
+        </div>
+        <div>
+          <h4>{state.proposal.short_description}</h4>
+        </div>
+        <div className="d-flex flex-row gap-1 align-items-center">
+          <h5>by </h5>
+          <Widget
+            src="mob.near/widget/Profile.ShortInlineBlock"
+            props={{ accountId: state.proposal.creator_id, tooltip: true }}
+          />
+        </div>
+        <div>
+          <h5>Description</h5>
+          <p>{state.proposal.body}</p>
+
+        </div>
+        <div
+          className="d-flex flex-wrap align-items-start"
+          style={{
+            rowGap: "16px",
+            columnGap: "48px",
+          }}
+        >
+        </div>
         <Widget
-          src={`${authorId}/widget/Governance.Proposal.VotingPeriodCard`}
+          src={`${authorId}/widget/Governance.Proposal.DiscussionCard`}
           props={{
-            startDate: state.proposal.vote_start_timestamp, endDate: state.proposal.vote_end_timestamp
+            commentsOpen: state.isProposalActiveOrDraft,
+            blockHeight: blockHeight,
+            onCommentButtonClick: () => State.update({ showReply: !state.showReply }),
+            onComment: () => State.update({ showReply: false }),
+            showReply: state.showReply,
+            commentItemIndex: commentItemIndex,
+            highlightComment: props.highlightComment,
+            commentsLimit: props.commentsLimit,
+
           }}
         />
-      </div>
-      <div className="w-100">
-        <Widget
-          src={`${authorId}/widget/Governance.Proposal.VotingResultsCard`}
-          props={{
-            yesVotes: state.proposalVotes.for_votes,
-            noVotes: state.proposalVotes.against_votes,
-            abstainVotes: state.proposalVotes.abstain_votes,
-            quorum: state.proposal.v_power_quorum_to_reach,
-            isQuorumReached: state.isQuorumReached,
-            isProposalSucceeded: state.isProposalSucceeded,
-            onVotingPeriod
-          }}
-        />
-      </div>
-      <div className="w-100">
-        <Widget
-          src={`${authorId}/widget/Governance.Proposal.VotesCard`}
-          props={{
-            accountVotes: state.proposalVotes.has_voted
-          }}
-        />
-      </div>
-    </WrapperRight>
+      </WrapperLeft>
+      <WrapperRight>
+        {accountId && (<div className="w-100">
+          <Widget
+            src={`${authorId}/widget/Governance.Proposal.VoteCard`}
+            props={{
+              proposal: { ...state.proposal, status: state.status }
+            }}
+          />
+        </div>)}
+
+        <div className="w-100">
+          <Widget
+            src={`${authorId}/widget/Governance.Proposal.VotingPeriodCard`}
+            props={{
+              startDate: state.proposal.vote_start_timestamp, endDate: state.proposal.vote_end_timestamp
+            }}
+          />
+        </div>
+        <div className="w-100">
+          <Widget
+            src={`${authorId}/widget/Governance.Proposal.VotingResultsCard`}
+            props={{
+              yesVotes: state.proposalVotes.for_votes,
+              noVotes: state.proposalVotes.against_votes,
+              abstainVotes: state.proposalVotes.abstain_votes,
+              quorum: state.proposal.v_power_quorum_to_reach,
+              isQuorumReached: state.isQuorumReached,
+              isProposalSucceeded: state.isProposalSucceeded,
+              onVotingPeriod
+            }}
+          />
+        </div>
+        <div className="w-100">
+          <Widget
+            src={`${authorId}/widget/Governance.Proposal.VotesCard`}
+            props={{
+              accountVotes: state.proposalVotes.has_voted
+            }}
+          />
+        </div>
+      </WrapperRight>
+    </ContentContainer>
   </Container>
 );
