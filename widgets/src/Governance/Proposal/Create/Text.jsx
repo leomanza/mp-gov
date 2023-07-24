@@ -1,6 +1,6 @@
 const accountId = props.accountId ?? context.accountId;
 const authorId = "manzanal.near";
-const contractId = "v003.mpip.near";
+const contractId = props.contractId || "v005.mpip.near";
 const META_VOTE_CONTRACT_ID = "meta-vote.near";
 const edit = props.edit ?? false;
 const mpip_id = props.mpip_id ?? null;
@@ -27,7 +27,9 @@ State.init({
     allVotingPower: null,
     allVotingPowerIsFetched: false,
     availableVotingPower: null,
-    availableVotingPowerIsFetched: false
+    availableVotingPowerIsFetched: false,
+    storageRequired: null,
+    storageRequiredIsFetched: false
 });
 
 const yoctoToNear = (amountYocto) =>
@@ -93,9 +95,20 @@ if (!state.proposalThresholdIsFetched && state.availableVotingPowerIsFetched) {
         false
     ).then((thresholdPassed) => State.update({ thresholdPassed, proposalThresholdIsFetched: true })
     );
+}
+
+if (!state.storageRequiredIsFetched) {
+    Near.asyncView(
+        contractId,
+        "get_mpip_storage_near",
+        {},
+        "final",
+        false
+    ).then((storageRequired) => State.update({ storageRequired, storageRequiredIsFetched: true })
+    );
 
 }
-if (edit && !state.proposalIsFetched && !state.proposalThresholdIsFetched) return <>Loading...</>
+if (edit && !state.proposalIsFetched && !state.proposalThresholdIsFetched && !state.storageRequiredIsFetched) return <>Loading...</>
 
 const isEmpty = (string) => string == undefined || string == null || string == '';
 const handleProposal = () => {
@@ -171,6 +184,15 @@ const ButtonsContainer = styled.div`
 
 return (
     <>
+        <div className="d-flex gap-3 flex-wrap">
+            <div className="d-flex flex-column gap-3">
+                <h5>Proposer</h5>
+                <Widget
+                    src="mob.near/widget/Profile.ShortInlineBlock"
+                    props={{ accountId: accountId, tooltip: true }}
+                />
+            </div>
+        </div>
         <Widget
             src={`${authorId}/widget/Common.Inputs.Text`}
             props={{
@@ -258,8 +280,9 @@ return (
                     disabled: !state.isValid
                 }}
             />
-          
+
         </ButtonsContainer>
         {!state.isValid && !state.thresholdPassed && <div className="text-danger d-flex justify-content-end text-right">Not enough voting power to create a proposal.</div>}
+        {state.isValid && (<div className="text-info d-flex justify-content-end text-right">A deposit of {state.storageRequired} NEAR will be required for storage</div>)}
     </>
 );

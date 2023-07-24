@@ -1,10 +1,10 @@
 const accountId = context.accountId;
 const authorId = "manzanal.near";
-const contractId = "v003.mpip.near";
+const contractId = props.contractId || "v005.mpip.near";
 const META_VOTE_CONTRACT_ID = "meta-vote.near";
 const GET_VP_METHOD = "get_all_locking_positions";
 const GET_IN_USE_VP_METHOD = "get_used_voting_power";
-const proposal = {...props.proposal, status: "Executed"};
+const proposal = props.proposal;
 
 State.init({
   memo: "",
@@ -58,6 +58,7 @@ if (!state.votingPowerIsFetched) {
       0
     );
     const votingPowerYocto = votingPower.toLocaleString('fullwide', { useGrouping: false });
+    console.log("voting power", votingPowerYocto)
     State.update({ votingPower: yoctoToNear(votingPowerYocto), votingPowerYocto, votingPowerIsFetched: true })
   });
 }
@@ -66,7 +67,7 @@ if (!state.votingPowerInUseIsFetched) {
   Near.asyncView(contractId, "get_voter_used_voting_power", {
     voter_id: context.accountId,
   }, "final", false).then((votingPowerInUse) =>
-    State.update({ votingPowerInUse: yoctoToNear(votingPowerInUse), votingPowerYocto, votingPowerInUseIsFetched: true })
+    State.update({ votingPowerInUse: yoctoToNear(votingPowerInUse), votingPowerInUseIsFetched: true })
   );
 }
 
@@ -210,25 +211,6 @@ const voted = (type) => {
 
 const voteButtonText = state.hasVoted ? "Remove Vote" : "Vote";
 const totalVotes = state.proposalVotes.for_votes + state.proposalVotes.againstVotes + state.proposalVotes.abstainVotes;
-
-if (proposal.status != "VotingProcess" && !state.hasVoted) {
-  return (
-    <Container>
-      <Heading><div><h2>Vote</h2></div></Heading>
-      <h5>Not Open to Voting.</h5>
-    </Container>
-  )
-}
-
-if (!state.hasVoted && (parseInt(state.votingPower) - parseInt(state.votingPowerInUse) <= 0)) {
-  return (
-    <Container>
-      <Heading><div><h2>Vote</h2></div></Heading>
-      <h5>Not Enough Voting Power to Vote.</h5>
-    </Container>
-  )
-}
-
 if (state.hasVoted && isProposalVotingFinished()) {
   return (
     <Container>
@@ -247,6 +229,25 @@ if (state.hasVoted && isProposalVotingFinished()) {
     </Container>
   )
 }
+
+if (!state.hasVoted && (parseInt(state.votingPower) - parseInt(state.votingPowerInUse) <= 0)) {
+  return (
+    <Container>
+      <Heading><div><h2>Vote</h2></div></Heading>
+      <h5>Not Enough Voting Power to Vote.</h5>
+    </Container>
+  )
+}
+
+if (proposal.status != "VotingProcess") {
+  return (
+    <Container>
+      <Heading><div><h2>Vote</h2></div></Heading>
+      <h5>Not Open to Voting.</h5>
+    </Container>
+  )
+}
+
 
 return (
   <Container>

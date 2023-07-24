@@ -59,8 +59,8 @@ padding: 3em;
 State.init({
   tab: props.tab ?? "home",
   content: props.content ?? "",
-
-
+  transactionHashes: props.transactionHashes,
+  transactionHashesIsHandled: false
 });
 
 const isForm = [
@@ -82,7 +82,7 @@ const getContent = {
     <Widget
       src={`${authorId}/widget/Governance.Proposal.Create.Index`}
       props={{
-        tab: state.tab, update
+        tab: state.tab, update, transactionHashes: state.transactionHashes, transactionHashesIsHandled: state.transactionHashesIsHandled
       }}
     />
   ),
@@ -90,7 +90,7 @@ const getContent = {
     <Widget
       src={`${authorId}/widget/Governance.Proposal.Index`}
       props={{
-        tab: state.tab, update, mpip_id: props.mpip_id
+        tab: state.tab, update, mpip_id: props.mpip_id, transactionHashes: state.transactionHashes, transactionHashesIsHandled: state.transactionHashesIsHandled
       }}
     />
   )

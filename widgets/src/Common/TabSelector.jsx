@@ -67,18 +67,10 @@ return (
       <TabItem
         selected={props.content === id}
         hasCount={!!count && count > 0}
-        href={`/${authorId}/widget/Governance.Index?tab=${tab}&content=${id}${
-          props.search ? "&search=" + props.search : ""
-        }${accountId ? "&accountId=" + accountId : ""}`}
+        href={`/${authorId}/widget/Governance.Index?tab=${tab}`}
         onClick={() =>
           props.update({
-            tab,
-            content: id,
-            search: props.search,
-            accountId,
-            cid,
-            projectId,
-            vendorId,
+            tab
           })
         }
         key={id}

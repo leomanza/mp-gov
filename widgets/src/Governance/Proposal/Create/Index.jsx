@@ -4,6 +4,11 @@ const onClose = props.onClose;
 const edit = props.edit;
 const mpip_id = props.mpip_id ?? null;
 const update = props.update;
+const transactionHashes = props.transactionHashes;
+const title = props.edit ? "Edit proposal" : "Create Proposal"
+State.init({
+  openModal: false
+})
 
 const Wrapper = styled.div`
   margin: 16px auto;
@@ -79,26 +84,49 @@ color: #000000;
 width: 100%;
 `;
 
+if (transactionHashes) {
+  const statusResult = fetch("https://rpc.mainnet.near.org", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: "dontcare",
+      method: "tx",
+      params: [
+        transactionHashes, accountId
+      ]
+    }),
+  })
+  //check status and open modal
+
+  if (statusResult.body.result.status && Object.keys(statusResult.body.result.status)[0] == "SuccessValue") {
+    State.update({ openModal: true });
+    update({ transactionHashesIsHandled: true })
+  }
+}
+
 return (
   <Wrapper>
-       
+    <Widget
+      src={`${authorId}/widget/Common.Modal.RedirectModal`}
+      props={{
+        open: state.openModal,
+        accept: () =>
+          update({
+            tab: "home"
+          })
+      }}
+    />
     <div className="d-flex justify-content-between align-items-center">
-      <FormHeader>Create Proposal</FormHeader>
-    </div>
-    <div className="d-flex gap-3 flex-wrap">
-      <div className="d-flex flex-column gap-3">
-        <h5>Proposer</h5>
-        <Widget
-          src="mob.near/widget/Profile.ShortInlineBlock"
-          props={{ accountId: accountId, tooltip: true }}
-        />
-      </div>
+      <FormHeader>{title}</FormHeader>
     </div>
     <div className="d-flex flex-column gap-2">
 
       <Widget
         src={`${authorId}/widget/Governance.Proposal.Create.Text`}
-        props={{edit, mpip_id, update}}
+        props={{ edit, mpip_id, update }}
       />
 
     </div>

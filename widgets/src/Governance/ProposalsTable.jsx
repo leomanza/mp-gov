@@ -1,11 +1,14 @@
 let proposals = props.proposals;
 const authorId = "manzanal.near";
-const contractId = "v003.mpip.near";
+const contractId = props.contractId || "v005.mpip.near";
 State.init({
 });
 
 // sort proposals by mpip_id descending
-proposals.sort((p1, p2) => p2.mpip_id - p1.mpip_id);
+if (proposals && proposals !== null) {
+  proposals.sort((p1, p2) => p2.mpip_id - p1.mpip_id);
+}
+
 const yoctoToNear = (amountYocto) =>
   new Big(amountYocto).div(new Big(10).pow(24)).toFixed(0);
 
@@ -147,13 +150,23 @@ const Container = styled.div`
   width: 100%;
   margin-bottom: 2em;
 `;
+if (!proposals || proposals === null || proposals.length == 0) {
+  return (
+    <Container class="table-responsive">
+      <table class="table table-striped">
+        <tbody>
+          No proposals created
+        </tbody>
+      </table>
+    </Container>
+  )
+}
 
 return (
   <Container class="table-responsive">
     <table class="table table-striped">
       <tbody>
-        {!proposals || proposals.length == 0 && (<>No proposals created</>)}
-        {proposals.length > 0 && proposals.map((proposal) => (
+        {proposals.map((proposal) => (
           <tr className="align-middle">
             <td class="text-start">
 

@@ -1,6 +1,6 @@
 const accountId = props.accountId ?? context.accountId
 const META_VOTE_CONTRACT_ID = "meta-vote.near";
-const contractId = "v003.mpip.near";
+const contractId = props.contractId || "v005.mpip.near";
 
 if (!accountId) return (<></>);
 
@@ -63,6 +63,7 @@ if (!state.nearBalanceIsFetched) {
       },
     }),
   });
+
   const { amount, storage_usage } = account.body.result;
   const NEAR_DECIMALS = 24;
   const COMMON_MIN_BALANCE = 0.05;

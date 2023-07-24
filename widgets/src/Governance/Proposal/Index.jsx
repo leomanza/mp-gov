@@ -1,14 +1,16 @@
-const contractId = "v003.mpip.near";
+const contractId = props.contractId || "v005.mpip.near";
 const accountId = props.accountId ?? context.accountId;
 const authorId = "manzanal.near";
 const META_VOTE_CONTRACT_ID = "meta-vote.near";
+const transactionHashes = props.transactionHashes;
+const transactionHashesIsHandled = props.transactionHashesIsHandled;
 const mpip_id = props.mpip_id ? parseInt(props.mpip_id) : null;
+const update = props.update;
 if (mpip_id == null)
   return "Proposal Id not defined"
 
 const commentItemIndex = { contractId, mpip: `MPIP-${mpip_id}` };
-
-State.init({
+const initState = {
   proposal: {},
   proposalIsFetched: false,
   status: null,
@@ -26,7 +28,31 @@ State.init({
   showReply: false,
   totalVotingPower: null,
   totalVotingPowerIsFetched: false
-});
+};
+State.init(initState);
+if (transactionHashesIsHandled && transactionHashes == false) return <>Loading...</>
+
+if (transactionHashes && !transactionHashesIsHandled) {
+  const statusResult = fetch("https://rpc.mainnet.near.org", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: "dontcare",
+      method: "tx",
+      params: [
+        transactionHashes, accountId
+      ]
+    }),
+  })
+
+  if (statusResult.body.result.status && Object.keys(statusResult.body.result.status)[0] == "SuccessValue") {
+    update({ transactionHashesIsHandled: true });
+    State.update({ ...initState });
+  }
+}
 
 if (!state.proposalIsFetched) {
   Near.asyncView(
@@ -129,10 +155,6 @@ const formatStatus = (status) => {
     case "Canceled": return "CANCELED"
   }
 }
-
-// ==============================
-// Styled Components
-// ==============================
 
 const statusColor =
   state.status === "Accepted" || state.status == "Executed"
@@ -262,66 +284,6 @@ const WrapperRight = styled.div`
     font-weight: 600;
     line-height: 1.2;
     color: ${statusColor};
-  }
-`;
-
-const MarkdownContainer = styled.div`
-  position: relative;
-  width: 100%;
-  padding: 24px;
-  background-color: #f8f9fa;
-  color: #1b1b18;
-  border-radius: 16px;
-  max-height: 700px;
-  overflow-y: auto;
-  color: #333;
-  line-height: 1.6;
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
-
-  h1 {
-    font-size: 2em;
-    color: #111;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 0.3em;
-    margin-bottom: 1em;
-  }
-
-  h2 {
-    font-size: 1.5em;
-    color: #222;
-    margin-bottom: 0.75em;
-  }
-
-  h3 {
-    font-size: 1.3em;
-    color: #333;
-    margin-bottom: 0.6em;
-  }
-
-  h4 {
-    font-size: 1.2em;
-    color: #444;
-    margin-bottom: 0.5em;
-  }
-
-  h5 {
-    font-size: 1.1em;
-    color: #555;
-    margin-bottom: 0.4em;
-  }
-
-  p {
-    font-size: 1em;
-    margin-bottom: 1em;
-  }
-
-  a {
-    color: #0645ad;
-    text-decoration: none;
-  }
-
-  a:hover {
-    text-decoration: underline;
   }
 `;
 
