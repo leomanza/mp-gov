@@ -1,4 +1,4 @@
-const authorId = "manzanal.near";
+const authorId = props.authorId || "manzanal.near";
 const title = props.title || "Success!"
 const description = props.description || "Proposal created successfully. Going back Home"
 const href = props.href || `/${authorId}/widget/Governance.Index?tab=home`;

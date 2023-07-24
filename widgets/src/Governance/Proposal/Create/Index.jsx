@@ -1,5 +1,6 @@
 const accountId = props.accountId ?? context.accountId;
-const authorId = "manzanal.near";
+const authorId = props.authorId || "manzanal.near";
+const contractId = props.contractId;
 const onClose = props.onClose;
 const edit = props.edit;
 const mpip_id = props.mpip_id ?? null;
@@ -116,7 +117,8 @@ return (
         accept: () =>
           update({
             tab: "home"
-          })
+          }),
+          authorId
       }}
     />
     <div className="d-flex justify-content-between align-items-center">
@@ -126,7 +128,7 @@ return (
 
       <Widget
         src={`${authorId}/widget/Governance.Proposal.Create.Text`}
-        props={{ edit, mpip_id, update }}
+        props={{ edit, mpip_id, update, authorId, contractId }}
       />
 
     </div>

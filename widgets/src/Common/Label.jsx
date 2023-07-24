@@ -1,4 +1,4 @@
-const authorId = "manzanal.near";
+const authorId = props.authorId || "manzanal.near";
 const accountId = props.accountId;
 const label = props.label ?? "DAO";
 

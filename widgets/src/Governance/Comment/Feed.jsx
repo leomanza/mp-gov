@@ -1,6 +1,6 @@
 const addressForComments = "mpipComment";
 const addressForProposals = "mpipComment";
-const authorId = "manzanal.near";
+const authorId = props.authorId || "manzanal.near";
 
 const index = {
   action: addressForComments,
@@ -27,6 +27,7 @@ const renderItem = (a) =>
             a.accountId === props.highlightComment?.accountId &&
             a.blockHeight === props.highlightComment?.blockHeight,
           raw,
+          authorId
         }}
       />
     </div>
@@ -37,6 +38,7 @@ return (
     <Widget
       src={`${authorId}/widget/Governance.Comment.ManualIndexFeed`}
       props={{
+        authorId,
         index,
         reverse: true,
         renderItem,

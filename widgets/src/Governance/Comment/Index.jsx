@@ -1,6 +1,6 @@
 const addressForComments = "mpipComment";
 const addressForProposals = "mpip";
-const authorId = "manzanal.near";
+const authorId =props.authorId || "manzanal.near";
 const mpip_id = props.mpip_id;
 const item = props.item;
 State.init({ showReply: false });

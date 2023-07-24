@@ -1,6 +1,6 @@
-const contractId = props.contractId || "v005.mpip.near";
+const contractId = props.contractId;
 const accountId = props.accountId ?? context.accountId;
-const authorId = "manzanal.near";
+const authorId = props.authorId || "manzanal.near";
 const META_VOTE_CONTRACT_ID = "meta-vote.near";
 const transactionHashes = props.transactionHashes;
 const transactionHashesIsHandled = props.transactionHashesIsHandled;
@@ -418,7 +418,8 @@ return (
             commentItemIndex: commentItemIndex,
             highlightComment: props.highlightComment,
             commentsLimit: props.commentsLimit,
-
+            authorId,
+            contractId
           }}
         />
       </WrapperLeft>
@@ -427,7 +428,9 @@ return (
           <Widget
             src={`${authorId}/widget/Governance.Proposal.VoteCard`}
             props={{
-              proposal: { ...state.proposal, status: state.status }
+              proposal: { ...state.proposal, status: state.status },
+              authorId,
+              contractId
             }}
           />
         </div>)}
@@ -436,7 +439,10 @@ return (
           <Widget
             src={`${authorId}/widget/Governance.Proposal.VotingPeriodCard`}
             props={{
-              startDate: state.proposal.vote_start_timestamp, endDate: state.proposal.vote_end_timestamp
+              startDate: state.proposal.vote_start_timestamp,
+              endDate: state.proposal.vote_end_timestamp,
+              authorId,
+              contractId
             }}
           />
         </div>
@@ -450,7 +456,9 @@ return (
               quorum: state.proposal.v_power_quorum_to_reach,
               isQuorumReached: state.isQuorumReached,
               isProposalSucceeded: state.isProposalSucceeded,
-              onVotingPeriod
+              onVotingPeriod,
+              authorId,
+              contractId
             }}
           />
         </div>

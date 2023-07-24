@@ -1,6 +1,6 @@
 const accountId = context.accountId;
-const authorId = "manzanal.near";
-const contractId = props.contractId || "v005.mpip.near";
+const authorId = props.authorId || "manzanal.near";
+const contractId = props.contractId;
 const accountVotes = props.accountVotes;
 console.log('votes', accountVotes)
 const Container = styled.div`

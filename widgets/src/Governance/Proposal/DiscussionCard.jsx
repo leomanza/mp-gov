@@ -1,4 +1,4 @@
-const authorId = "manzanal.near";
+const authorId = props.authorId || "manzanal.near";
 const commentsOpen = props.commentsOpen;
 const blockHeight = props.blockHeight;
 const onCommentButtonClick = props.onCommentButtonClick;
@@ -8,7 +8,6 @@ const commentItemIndex = props.commentItemIndex;
 const highlightComment = props.highlightComment;
 const commentsLimit = props.commentsLimit;
 const raw = props.raw;
-
 
 const Container = styled.div`
   display: flex;

@@ -1,6 +1,6 @@
 const addressForComments = "mpipComment";
 const addressForProposals = "mpip";
-const authorId = "manzanal.near";
+const authorId =props.authorId || "manzanal.near";
 const index = props.index;
 if (!index) {
   return "props.index is not defined";

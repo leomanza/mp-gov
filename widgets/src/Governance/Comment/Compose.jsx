@@ -1,4 +1,4 @@
-const author = "manzanal.near";
+const authorId = props.authorId || "manzanal.near";
 if (!context.accountId) {
   return "";
 }
@@ -62,12 +62,13 @@ return (
     {state.content && (
       <div className="mt-3">
         <Widget
-          src={`${author}/widget/Governance.Comment.Index`}
+          src={`${authorId}/widget/Governance.Comment.Index`}
           props={{
             item,
             accountId: context.accountId,
             content: state.content,
             blockHeight: "now",
+            authorId
           }}
         />
       </div>

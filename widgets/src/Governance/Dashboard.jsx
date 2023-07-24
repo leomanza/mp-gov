@@ -1,4 +1,5 @@
-const authorId = "manzanal.near";
+const authorId = props.authorId || "manzanal.near";
+const contractId = props.contractId;
 
 const availableContent = ["proposals", "voters", "votes"]
 
@@ -14,6 +15,7 @@ const contentSelector = (
   <Widget
     src={`${authorId}/widget/Governance.TabSelector`}
     props={{
+      authorId,
       tab: props.tab ?? "home",
       content: getContent(props.content),
       search: props.search,
@@ -40,19 +42,19 @@ const content = {
   proposals: (
     <Widget
       src={`${authorId}/widget/Governance.Proposals`}
-      props={{ search: state.search, update: props.update }}
+      props={{ search: state.search, update: props.update, authorId, contractId }}
     />
   ),
   voters: (
     <Widget
       src={`${authorId}/widget/Governance.Voters`}
-      props={{ search: state.search, update: props.update }}
+      props={{ search: state.search, update: props.update, authorId, contractId }}
     />
   ),
   votes: (
     <Widget
       src={`${authorId}/widget/Governance.Votes`}
-      props={{ search: state.search, update: props.update }}
+      props={{ search: state.search, update: props.update, authorId, contractId }}
     />
   ),
 }[getContent(props.content)];

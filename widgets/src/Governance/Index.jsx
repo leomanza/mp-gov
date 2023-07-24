@@ -1,5 +1,5 @@
-const authorId = "manzanal.near";
-
+const authorId = props.authorId || "manzanal.near";
+const contractId = props.contractId || "v005.mpip.near"
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
@@ -74,7 +74,7 @@ const getContent = {
     <Widget
       src={`${authorId}/widget/Governance.Dashboard`}
       props={{
-        tab: state.tab, update
+        tab: state.tab, update, authorId, contractId
       }}
     />
   ),
@@ -82,7 +82,12 @@ const getContent = {
     <Widget
       src={`${authorId}/widget/Governance.Proposal.Create.Index`}
       props={{
-        tab: state.tab, update, transactionHashes: state.transactionHashes, transactionHashesIsHandled: state.transactionHashesIsHandled
+        tab: state.tab,
+        update,
+        transactionHashes: state.transactionHashes,
+        transactionHashesIsHandled: state.transactionHashesIsHandled,
+        contractId,
+        authorId
       }}
     />
   ),
@@ -90,7 +95,13 @@ const getContent = {
     <Widget
       src={`${authorId}/widget/Governance.Proposal.Index`}
       props={{
-        tab: state.tab, update, mpip_id: props.mpip_id, transactionHashes: state.transactionHashes, transactionHashesIsHandled: state.transactionHashesIsHandled
+        tab: state.tab,
+        update,
+        mpip_id: props.mpip_id,
+        transactionHashes: state.transactionHashes,
+        transactionHashesIsHandled: state.transactionHashesIsHandled,
+        contractId,
+        authorId
       }}
     />
   )
@@ -107,7 +118,7 @@ return (
         }>
         {logo}
       </a>
-      <Widget src={`${authorId}/widget/Governance.Balance`} props={{}} />
+      <Widget src={`${authorId}/widget/Governance.Balance`} props={{ authorId, contractId }} />
     </Header >
     <ContentContainer className={isForm ? "form" : ""}>
       {getContent}

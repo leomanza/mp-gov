@@ -1,4 +1,4 @@
-const authorId = "manzanal.near";
+const authorId = props.authorId || "manzanal.near";
 const buttons = props.buttons ?? [];
 const tab = props.tab;
 const accountId = props.accountId;

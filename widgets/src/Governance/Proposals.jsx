@@ -1,7 +1,7 @@
 const accountId = props.accountId ?? context.accountId;
-const contractId = props.contractId ?? "v005.mpip.near";
+const contractId = props.contractId;
 const META_VOTE_CONTRACT_ID = "meta-vote.near";
-const authorId = "manzanal.near"
+const authorId = props.authorId || "manzanal.near"
 const proposalsPerPage = props.proposalsPerPage ?? 10; // Number of proposals to fetch at a time
 
 State.init({
@@ -228,7 +228,7 @@ const Section = styled.div`
 `;
 
 
-if (!state.proposalsAreFetched || !state.quorumIsFetched  || !state.thresholdIsFetched || !state.votersAreFetched || !state.totalHoldersIsFetched || !state.totalVotingPowerIsFetched) {
+if (!state.proposalsAreFetched || !state.quorumIsFetched || !state.thresholdIsFetched || !state.votersAreFetched || !state.totalHoldersIsFetched || !state.totalVotingPowerIsFetched) {
     return <>Loading...</>;
 }
 const quorumToReach = (parseInt(yoctoToNear(state.totalVotingPower)) * state.quorum / 100 / 100);
@@ -326,7 +326,7 @@ return (
         <div class="table-responsive w-100 mt-2">
             <Widget
                 src={`${authorId}/widget/Governance.ProposalsTable`}
-                props={{ proposals: state.proposals, update: props.update }}
+                props={{ proposals: state.proposals, update: props.update, authorId, contractId }}
             />
         </div>
     </Container>
