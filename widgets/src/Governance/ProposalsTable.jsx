@@ -1,6 +1,6 @@
 let proposals = props.proposals;
 const authorId = props.authorId || "manzanal.near";
-const contractId = props.contractId;
+const contractId = props.contractId || "v006.mpip.near"
 State.init({
 });
 
@@ -127,6 +127,11 @@ const Label = styled.span`
   line-height: 1em;
   text-align: center;
   color: #4a5568;
+  word-break: break-word 
+  @media screen and (max-width: 768px) {
+    font-size: 0.7em;
+    line-height: 0.8em;
+  }
 `;
 const Value = styled.span`
   font-style: normal;
@@ -135,6 +140,11 @@ const Value = styled.span`
   line-height: 1em;
   text-align: center;
   color: ${(p) => (p.color ? p.color : "#000")};
+  word-break: break-word 
+  @media screen and (max-width: 768px) {
+    font-size: 0.8em;
+    line-height: 0.8em;
+  }
 `;
 
 const Cell = styled.div`

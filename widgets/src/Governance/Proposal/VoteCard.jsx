@@ -1,9 +1,8 @@
 const accountId = context.accountId;
-const authorId = props.authorId || "manzanal.near";
-const contractId = props.contractId;
+const authorId = props.authorId || "manzanal.near";
+const contractId = props.contractId || "v006.mpip.near";
 const META_VOTE_CONTRACT_ID = "meta-vote.near";
 const GET_VP_METHOD = "get_all_locking_positions";
-const GET_IN_USE_VP_METHOD = "get_used_voting_power";
 const proposal = props.proposal;
 
 State.init({
@@ -14,117 +13,12 @@ State.init({
   votingPowerYocto: null,
   votingPower: null,
   votingPowerIsFetched: false,
-  votingPowerInUse: null,
-  votingPowerInUseIsFetched: false,
   hasVoted: null,
   userVote: null,
   hasVotedIsFetched: false,
-  userVoteIsFetched: false
+  userVoteIsFetched: false,
 });
 
-const yoctoToNear = (amountYocto) =>
-  new Big(amountYocto).div(new Big(10).pow(24)).toFixed(0);
-
-const isProposalVotingFinished = () => proposal.status !== "Draft" && proposal.status !== Active && proposal.status !== "VotingProcess";
-
-if (!state.proposalVotesAreFetched) {
-  Near.asyncView(
-    contractId,
-    "get_proposal_votes",
-    { mpip_id: proposal.mpip_id },
-    "final",
-    false
-  ).then((proposalVotes) => State.update({ proposalVotes, proposalVotesAreFetched: true })
-  );
-}
-
-if (!state.hasVotedIsFetched) {
-  Near.asyncView(
-    contractId,
-    "has_voted",
-    { mpip_id: proposal.mpip_id, voter_id: accountId },
-    "final",
-    false
-  ).then((hasVoted) => State.update({ hasVoted, hasVotedIsFetched: true })
-  );
-}
-
-if (!state.votingPowerIsFetched) {
-  Near.asyncView(META_VOTE_CONTRACT_ID, GET_VP_METHOD, {
-    voter_id: context.accountId,
-  }, "final", false).then((allLockingPositions) => {
-    const votingPower = allLockingPositions.reduce(
-      (accumulator, lockingPosition) => accumulator + parseInt(lockingPosition.voting_power),
-      0
-    );
-    const votingPowerYocto = votingPower.toLocaleString('fullwide', { useGrouping: false });
-    console.log("voting power", votingPowerYocto)
-    State.update({ votingPower: yoctoToNear(votingPowerYocto), votingPowerYocto, votingPowerIsFetched: true })
-  });
-}
-
-if (!state.votingPowerInUseIsFetched) {
-  Near.asyncView(contractId, "get_voter_used_voting_power", {
-    voter_id: context.accountId,
-  }, "final", false).then((votingPowerInUse) =>
-    State.update({ votingPowerInUse: yoctoToNear(votingPowerInUse), votingPowerInUseIsFetched: true })
-  );
-}
-
-if (!state.userVoteIsFetched) {
-  Near.asyncView(contractId, "get_my_vote", { mpip_id: proposal.mpip_id, voter_id: accountId }, "final", false).then((userVote) =>
-    State.update({ userVote, userVoteIsFetched: true })
-  );
-}
-
-if (!state.proposalVotesAreFetched || !state.votingPowerIsFetched || !state.hasVotedIsFetched || !state.userVoteIsFetched) return <>Loading...</>
-
-const handleVote = (vote) => {
-  // check if user already vote
-  if (state.hasVoted) {
-    if (state.userVote.vote_type == vote && !isProposalVotingFinished()) {
-      Near.call([
-        {
-          contractName: contractId,
-          methodName: "remove_vote_proposal",
-          args: {
-            mpip_id: props.proposal.mpip_id
-          },
-          gas: 300000000000000,
-        },
-      ])
-    }
-  } else {
-    Near.call([
-      {
-        contractName: contractId,
-        methodName: "vote_proposal",
-        args: {
-          mpip_id: props.proposal.mpip_id,
-          vote,
-          voting_power: state.votingPowerYocto,
-          memo: state.memo
-        },
-        gas: 300000000000000,
-      },
-    ]);
-  }
-};
-
-const withdrawVotingPower = () => {
-  if (isProposalVotingFinished) {
-    Near.call([
-      {
-        contractName: contractId,
-        methodName: "withdraw_voting_power",
-        args: {
-          mpip_id: props.proposal.mpip_id
-        },
-        gas: 300000000000000,
-      },
-    ])
-  }
-}
 
 const Container = styled.div`
   display: flex;
@@ -154,6 +48,10 @@ const VotesContainer = styled.div`
   padding: 0;
   gap: 1em;
   width: 100%;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 const Heading = styled.div`
@@ -199,86 +97,205 @@ const Memo = styled.div`
   padding: 0px;
   width: 75%;
 `;
-const voted = (type) => {
-  // const userVote =
-  //   Near.view(
-  //     contractId,
-  //     "get_my_vote",
-  //     { mpip_id: proposal.mpip_id, voter_id: accountId }
-  //   )
-  return state.userVote.vote_type == type
+
+if (!accountId) {
+  return (
+    <Container>
+      <Heading>
+        <div>
+          <h2>Vote</h2>
+        </div>
+      </Heading>
+      <h5>You must login to vote.</h5>
+    </Container>
+  );
 }
+
+const yoctoToNear = (amountYocto) =>
+  new Big(amountYocto).div(new Big(10).pow(24)).toFixed(0);
+
+const isProposalVotingFinished = () =>
+  proposal.status !== "Draft" &&
+  proposal.status !== Active &&
+  proposal.status !== "VotingProcess";
+
+if (!state.proposalVotesAreFetched) {
+  Near.asyncView(
+    contractId,
+    "get_proposal_votes",
+    { mpip_id: proposal.mpip_id },
+    "final",
+    false
+  ).then((proposalVotes) =>
+    State.update({ proposalVotes, proposalVotesAreFetched: true })
+  );
+}
+
+if (!state.hasVotedIsFetched) {
+  Near.asyncView(
+    contractId,
+    "has_voted",
+    { mpip_id: proposal.mpip_id, voter_id: accountId },
+    "final",
+    false
+  ).then((hasVoted) => State.update({ hasVoted, hasVotedIsFetched: true }));
+}
+
+if (!state.votingPowerIsFetched) {
+  Near.asyncView(
+    META_VOTE_CONTRACT_ID,
+    GET_VP_METHOD,
+    {
+      voter_id: context.accountId,
+    },
+    "final",
+    false
+  ).then((allLockingPositions) => {
+    const votingPower = allLockingPositions.reduce(
+      (accumulator, lockingPosition) =>
+        accumulator + parseInt(lockingPosition.voting_power),
+      0
+    );
+    const votingPowerYocto = votingPower.toLocaleString('fullwide', { useGrouping: false });
+    State.update({
+      votingPower: yoctoToNear(votingPowerYocto),
+      votingPowerYocto: yoctoToNear(votingPowerYocto) + "000000000000000000000000",
+      votingPowerIsFetched: true,
+    });
+  });
+}
+
+if (!state.userVoteIsFetched) {
+  Near.asyncView(
+    contractId,
+    "get_my_vote",
+    { mpip_id: proposal.mpip_id, voter_id: accountId },
+    "final",
+    false
+  ).then((userVote) => State.update({ userVote, userVoteIsFetched: true }));
+}
+
+if (
+  !state.proposalVotesAreFetched ||
+  !state.votingPowerIsFetched ||
+  !state.hasVotedIsFetched ||
+  !state.userVoteIsFetched
+)
+  return <>Loading...</>;
+
+const handleVote = (vote) => {
+  // check if user already vote
+  if (state.hasVoted) {
+    if (state.userVote.vote_type == vote && !isProposalVotingFinished()) {
+      Near.call([
+        {
+          contractName: contractId,
+          methodName: "remove_vote_proposal",
+          args: {
+            mpip_id: props.proposal.mpip_id,
+          },
+          gas: 300000000000000,
+        },
+      ]);
+    }
+  } else {
+    Near.call([
+      {
+        contractName: contractId,
+        methodName: "vote_proposal",
+        args: {
+          mpip_id: props.proposal.mpip_id,
+          vote,
+          memo: state.memo,
+        },
+        gas: 300000000000000,
+      },
+    ]);
+  }
+};
+
+const voted = (type) => {
+  return state.userVote.vote_type == type;
+};
 
 const voteButtonText = state.hasVoted ? "Remove Vote" : "Vote";
-const totalVotes = state.proposalVotes.for_votes + state.proposalVotes.againstVotes + state.proposalVotes.abstainVotes;
-if (state.hasVoted && isProposalVotingFinished()) {
-  return (
-    <Container>
-      <Heading><div><h2>Vote</h2></div></Heading>
-      <VotesContainer>
-        <Widget
-          src={`${authorId}/widget/Common.Button`}
-          props={{
-            children: <><i class="bi bi-box-arrow-down" />Withdraw Voting Power</>,
-            onClick: () => withdrawVotingPower(),
-            className: "mt-2",
-            variant: "primary",
-          }}
-        />
-      </VotesContainer>
-    </Container>
-  )
-}
+const totalVotes =
+  state.proposalVotes.for_votes +
+  state.proposalVotes.againstVotes +
+  state.proposalVotes.abstainVotes;
 
-if (!state.hasVoted && (parseInt(state.votingPower) - parseInt(state.votingPowerInUse) <= 0)) {
+if (
+  !state.hasVoted &&
+  parseInt(state.votingPower) <= 0
+) {
   return (
     <Container>
-      <Heading><div><h2>Vote</h2></div></Heading>
+      <Heading>
+        <div>
+          <h2>Vote</h2>
+        </div>
+      </Heading>
       <h5>Not Enough Voting Power to Vote.</h5>
     </Container>
-  )
+  );
 }
 
 if (proposal.status != "VotingProcess") {
   return (
     <Container>
-      <Heading><div><h2>Vote</h2></div></Heading>
-      <h5>Not Open to Voting.</h5>
+      <Heading>
+        <div>
+          <h2>Vote</h2>
+        </div>
+      </Heading>
+      <h5>Not open to voting.</h5>
     </Container>
-  )
+  );
 }
-
 
 return (
   <Container>
-    <Heading><div><h2>Vote</h2></div></Heading>
+    <Heading>
+      <div>
+        <h2>Vote</h2>
+      </div>
+    </Heading>
     <Memo>
-      {state.hasVoted ? (<h5>memo: {state.userVote.memo}</h5>) : (<Widget
-        src={`${authorId}/widget/Common.Inputs.Text`}
-        props={{
-          label: "memo",
-          placeholder: "Write a memo for your vote (optional)",
-          value: state.memo,
-          onChange: (memo) => State.update({ memo }),
-          validate: () => {
-            if (state.memo.length > 40) {
-              State.update({
-                memoError: "Memo must be less than 40 characters",
-              });
-              return;
-            }
-            State.update({ memoError: "" });
-          },
-          error: state.memoError,
-        }}
-      />)}
+      {state.hasVoted ? (
+        <h5>memo: {state.userVote.memo}</h5>
+      ) : (
+        <Widget
+          src={`${authorId}/widget/Common.Inputs.Text`}
+          props={{
+            label: "memo",
+            placeholder: "Write a memo for your vote (optional)",
+            value: state.memo,
+            onChange: (memo) => State.update({ memo }),
+            validate: () => {
+              if (state.memo.length > 40) {
+                State.update({
+                  memoError: "Memo must be less than 40 characters",
+                });
+                return;
+              }
+              State.update({ memoError: "" });
+            },
+            error: state.memoError,
+          }}
+        />
+      )}
     </Memo>
     <VotesContainer>
       <Widget
         src={`${authorId}/widget/Common.Button`}
         props={{
           disabled: state.hasVoted && !voted("For"),
-          children: <><i class="bi bi-envelope-check" />{state.hasVoted && voted("For") ? "Remove Vote For" : "Vote For"}</>,
+          children: (
+            <>
+              <i class="bi bi-envelope-check" />
+              {state.hasVoted && voted("For") ? "Remove Vote For" : "Vote For"}
+            </>
+          ),
           onClick: () => handleVote("For"),
           className: "mt-2",
           variant: "primary",
@@ -289,7 +306,14 @@ return (
         src={`${authorId}/widget/Common.Button`}
         props={{
           disabled: state.hasVoted && !voted("Abstain"),
-          children: <><i class="bi bi-envelope" />{state.hasVoted && voted("Abstain") ? "Remove Vote Abstain" : "Vote Abstain"}</>,
+          children: (
+            <>
+              <i class="bi bi-envelope" />
+              {state.hasVoted && voted("Abstain")
+                ? "Remove Vote Abstain"
+                : "Vote Abstain"}
+            </>
+          ),
           onClick: () => handleVote("Abstain"),
           className: "mt-2",
           variant: "primary",
@@ -300,7 +324,14 @@ return (
         src={`${authorId}/widget/Common.Button`}
         props={{
           disabled: state.hasVoted && !voted("Against"),
-          children: <><i class="bi bi-envelope-dash" />{state.hasVoted && voted("Against") ? "Remove Vote Against" : "Vote Against"}</>,
+          children: (
+            <>
+              <i class="bi bi-envelope-dash" />
+              {state.hasVoted && voted("Against")
+                ? "Remove Vote Against"
+                : "Vote Against"}
+            </>
+          ),
           onClick: () => handleVote("Against"),
           className: "mt-2",
           variant: "primary",
@@ -308,5 +339,4 @@ return (
       />
     </VotesContainer>
   </Container>
-
 );

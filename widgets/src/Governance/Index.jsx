@@ -1,11 +1,12 @@
 const authorId = props.authorId || "manzanal.near";
-const contractId = props.contractId || "v005.mpip.near"
+const contractId = props.contractId || "v006.mpip.near"
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
   margin-bottom: 0.75em;
+  gap: 0.75em;
   h2 {
     font-style: normal;
     font-weight: 700;
@@ -13,6 +14,9 @@ const Header = styled.div`
     line-height: 1.5em;
     color: #000000;
   }
+  @media (max-width: 600px) {
+    flex-direction: column;
+   }
 `;
 
 const logo = <svg width="133" height="16" viewBox="0 0 133 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -52,6 +56,10 @@ padding: 3em;
 
 * {
   margin: 0;
+}
+
+@media (max-width: 768px) {
+ padding: 1.5em
 }
 `
 

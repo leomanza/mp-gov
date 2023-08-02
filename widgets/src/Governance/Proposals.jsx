@@ -1,5 +1,5 @@
 const accountId = props.accountId ?? context.accountId;
-const contractId = props.contractId;
+const contractId = props.contractId || "v006.mpip.near"
 const META_VOTE_CONTRACT_ID = "meta-vote.near";
 const authorId = props.authorId || "manzanal.near"
 const proposalsPerPage = props.proposalsPerPage ?? 10; // Number of proposals to fetch at a time
@@ -190,25 +190,19 @@ const Filter = styled.div`
 const Metrics = styled.div`
   display: flex;
   flex-direction: row;
-  align-items: stretch;
-  gap: 0.5em;
-  width: 100%;
-  max-width: 1300px;
 
+  width: 100%;
+  gap: 0.5em;
   div {
-    width: 20%;
+    width: 25%;
   }
 
   @media (max-width: 768px) {
-    flex-wrap: wrap;
-
+    flex-direction: column;
     div {
-      width: 49%;
-    }
-
-    div:last-child {
-      width: 100%;
-    }
+        width: 100%;
+      }
+  
   }
 `;
 
@@ -225,6 +219,9 @@ const Section = styled.div`
     line-height: 36px;
     color: #000000;
   }
+  @media (max-width: 600px) {
+    flex-direction: column;
+   }
 `;
 
 
@@ -266,7 +263,6 @@ return (
         </Section>
         <Section>
             <h3>All Proposals</h3>
-
             <Widget
                 src={`${authorId}/widget/Common.Button`}
                 props={{

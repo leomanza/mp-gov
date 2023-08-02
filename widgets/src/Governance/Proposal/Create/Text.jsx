@@ -22,12 +22,8 @@ State.init({
     isValid: false,
     proposalThresholdIsFetched: false,
     thresholdPassed: false,
-    inUseVotingPower: null,
-    inUseVotingPowerIsFetched: false,
     allVotingPower: null,
     allVotingPowerIsFetched: false,
-    availableVotingPower: null,
-    availableVotingPowerIsFetched: false,
     storageRequired: null,
     storageRequiredIsFetched: false
 });
@@ -64,33 +60,17 @@ if (!state.allVotingPowerIsFetched) {
             (accumulator, lockingPosition) => accumulator + parseInt(lockingPosition.voting_power),
             0
         );
-        State.update({ allVotingPower: yoctoToNear(voting_power), allVotingPowerIsFetched: true })
+        const votingPowerYocto = voting_power.toLocaleString('fullwide', { useGrouping: false });
+        State.update({ allVotingPower: votingPowerYocto, allVotingPowerIsFetched: true })
     }
     );
 }
 
-if (!state.inUseVotingPowerIsFetched) {
-    Near.asyncView(
-        contractId,
-        "get_voter_used_voting_power",
-        { voter_id: context.accountId, },
-        "final",
-        false
-    ).then((inUseVotingPower) =>
-        State.update({ inUseVotingPower: yoctoToNear(inUseVotingPower), inUseVotingPowerIsFetched: true })
-    );
-}
-
-if (!state.availableVotingPowerIsFetched && state.allVotingPowerIsFetched && state.inUseVotingPowerIsFetched) {
-    const availableVotingPower = nearToYocto(state.allVotingPower - state.inUseVotingPower)
-    State.update({ availableVotingPower, availableVotingPowerIsFetched: true })
-}
-
-if (!state.proposalThresholdIsFetched && state.availableVotingPowerIsFetched) {
+if (!state.proposalThresholdIsFetched && state.allVotingPowerIsFetched) {
     Near.asyncView(
         contractId,
         "check_proposal_threshold",
-        { voting_power: state.availableVotingPower },
+        { voting_power: state.allVotingPower },
         "final",
         false
     ).then((thresholdPassed) => State.update({ thresholdPassed, proposalThresholdIsFetched: true })

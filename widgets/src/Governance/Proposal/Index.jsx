@@ -1,4 +1,4 @@
-const contractId = props.contractId;
+const contractId = props.contractId || "v006.mpip.near"
 const accountId = props.accountId ?? context.accountId;
 const authorId = props.authorId || "manzanal.near";
 const META_VOTE_CONTRACT_ID = "meta-vote.near";
@@ -171,7 +171,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 500px;
-  justify-content: start;
+  justify-content: start; 
 `;
 
 const ContentContainer = styled.div`
@@ -207,6 +207,9 @@ const ContentContainer = styled.div`
     font-weight: 600;
     line-height: 1.2;
     color: ${statusColor};
+  }
+  @media (max-width: 768px) {
+    flex-direction: column;
   }
 `;
 const WrapperLeft = styled.div`
@@ -295,6 +298,14 @@ const BackButton = styled.button`
   transform: translate(1em, -1em);
 `;
 
+const ButtonsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  @media (max-width: 768px) {
+    flex-direction: column;  
+  }
+`
+
 const onStartVotingButtonClick = () => {
   Near.call([
     {
@@ -344,7 +355,8 @@ return (
     </div>
     <ContentContainer>
       <WrapperLeft>
-        {state.proposalIsEditable && isProposalCreator() && (<div className="ms-auto">
+        {state.proposalIsEditable && isProposalCreator() && (
+        <ButtonsContainer>
           <Widget
             src={`${authorId}/widget/Common.Button`}
             props={{
@@ -373,7 +385,7 @@ return (
               variant: "primary",
             }}
           />
-        </div>)}
+        </ButtonsContainer>)}
 
         <div className="d-flex justify-content-end align-items-center">
           <div className="d-flex justify-content-between align-items-center">
@@ -424,7 +436,7 @@ return (
         />
       </WrapperLeft>
       <WrapperRight>
-        {accountId && (<div className="w-100">
+      <div className="w-100">
           <Widget
             src={`${authorId}/widget/Governance.Proposal.VoteCard`}
             props={{
@@ -433,7 +445,7 @@ return (
               contractId
             }}
           />
-        </div>)}
+        </div>
 
         <div className="w-100">
           <Widget
