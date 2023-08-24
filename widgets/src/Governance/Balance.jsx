@@ -1,15 +1,15 @@
-const accountId = props.accountId ?? context.accountId
+const accountId = props.accountId ?? context.accountId;
 const META_VOTE_CONTRACT_ID = "meta-vote.near";
-const contractId = props.contractId;
+const contractId = props.contractId || "v006.mpip.near";
 
-if (!accountId) return (<></>);
+if (!accountId) return <></>;
 
 State.init({
   allVotingPower: null,
   allVotingPowerIsFetched: false,
   nearBalance: null,
-  nearBalanceIsFetched: false
-})
+  nearBalanceIsFetched: false,
+});
 const yoctoToNear = (amountYocto) =>
   new Big(amountYocto).div(new Big(10).pow(24)).toFixed(0);
 
@@ -20,16 +20,22 @@ if (!state.allVotingPowerIsFetched) {
   Near.asyncView(
     META_VOTE_CONTRACT_ID,
     "get_all_locking_positions",
-    { voter_id: context.accountId, },
+    { voter_id: context.accountId },
     "final",
     false
   ).then((allLockingPositions) => {
     const voting_power = allLockingPositions.reduce(
-      (accumulator, lockingPosition) => accumulator + parseInt(lockingPosition.voting_power),
+      (accumulator, lockingPosition) =>
+        lockingPosition.is_locked
+          ? accumulator + parseInt(lockingPosition.voting_power)
+          : accumulator,
       0
     );
-    State.update({ allVotingPower: yoctoToNear(voting_power), allVotingPowerIsFetched: true })}
-  );
+    State.update({
+      allVotingPower: yoctoToNear(voting_power),
+      allVotingPowerIsFetched: true,
+    });
+  });
 }
 
 if (!state.nearBalanceIsFetched) {
@@ -60,10 +66,12 @@ if (!state.nearBalanceIsFetched) {
   const balance = availableBalance
     .div(Big(10).pow(NEAR_DECIMALS))
     .minus(COMMON_MIN_BALANCE);
-   
-   State.update({ nearBalance: balance.lt(0) ? "0" : balance.toFixed(5, BIG_ROUND_DOWN), nearBalanceIsFetched: true })
-}
 
+  State.update({
+    nearBalance: balance.lt(0) ? "0" : balance.toFixed(5, BIG_ROUND_DOWN),
+    nearBalanceIsFetched: true,
+  });
+}
 
 const Balances = styled.div`
   display: flex;
@@ -82,11 +90,21 @@ const Balances = styled.div`
   line-height: 1em;
   color: #11181c;
 `;
-const wallet = <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-wallet" viewBox="0 0 16 16">
-  <path d="M0 3a2 2 0 0 1 2-2h13.5a.5.5 0 0 1 0 1H15v2a1 1 0 0 1 1 1v8.5a1.5 1.5 0 0 1-1.5 1.5h-12A2.5 2.5 0 0 1 0 12.5V3zm1 1.732V12.5A1.5 1.5 0 0 0 2.5 14h12a.5.5 0 0 0 .5-.5V5H2a1.99 1.99 0 0 1-1-.268zM1 3a1 1 0 0 0 1 1h12V2H2a1 1 0 0 0-1 1z" />
-</svg>
+const wallet = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    fill="currentColor"
+    class="bi bi-wallet"
+    viewBox="0 0 16 16"
+  >
+    <path d="M0 3a2 2 0 0 1 2-2h13.5a.5.5 0 0 1 0 1H15v2a1 1 0 0 1 1 1v8.5a1.5 1.5 0 0 1-1.5 1.5h-12A2.5 2.5 0 0 1 0 12.5V3zm1 1.732V12.5A1.5 1.5 0 0 0 2.5 14h12a.5.5 0 0 0 .5-.5V5H2a1.99 1.99 0 0 1-1-.268zM1 3a1 1 0 0 0 1 1h12V2H2a1 1 0 0 0-1 1z" />
+  </svg>
+);
 
-if (!state.allVotingPowerIsFetched || !state.nearBalanceIsFetched) return (<>Loading...</>);
+if (!state.allVotingPowerIsFetched || !state.nearBalanceIsFetched)
+  return <>Loading...</>;
 
 return (
   <Balances>
